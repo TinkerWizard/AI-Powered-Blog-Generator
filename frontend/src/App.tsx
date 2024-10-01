@@ -1,0 +1,51 @@
+import React, { useState } from 'react';
+import './App.css';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { HomePage } from './Layouts/Home/HomePage';
+function App() {
+  const [content, setContent] = useState<string>();
+  const [topic, setTopic] = useState<string>();
+  const handleTopicChange = (event: any) => {
+    event.preventDefault();
+    setTopic(event.target.value);
+  }
+  const handleSubmit = async (event: any) => {
+    // event.preventDefault();
+    // alert(topic);
+    try {
+      const response = await fetch("http://127.0.0.1:5000/generate", {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ topic })
+      });
+
+      const data = await response.json();
+      if (response.ok) {
+        setContent(data.content);
+        alert(data.content);
+      }
+      else {
+        alert("Error in generating or someting");
+      }
+
+    } catch (error: any) {
+      console.log("Error:", error);
+    }
+  }
+  return (
+    <Router>
+      <Routes>
+        {/* Authentication */}
+        {/* <Route path="/signup" element={<SignUpForm />} />
+        <Route path="/signin" element={<SignInForm />} /> */}
+
+        {/* Home */}
+        <Route path="/home" element={<HomePage />} />
+      </Routes>
+    </Router>
+  );
+}
+
+export default App;

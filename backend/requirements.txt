@@ -1,0 +1,5 @@
+fastapi==0.103.1
+uvicorn==0.22.0
+sqlmodel==0.0.8
+databases==0.6.2
+psycopg2-binary==2.9.6

@@ -5,7 +5,7 @@ from database import get_db
 from api.schemas.blog import NewBlog, UpdateBlog
 from datetime import datetime, timezone
 import base64
-
+from api.security.auth import get_current_user
 router = APIRouter()
 
 
@@ -39,7 +39,7 @@ def get_blogs_by_author_username(username: str, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Author have not pulished any blogs or invalid username")
     return blogs
 
-@router.get("/following/{username}")
+@router.get("/following/{username}")    
 def get_blogs_by_user_username(username: str, db: Session = Depends(get_db)):
     """
     RETRIEVE BLOGS BY USER USERNAME, DISPLAY ONLY BLOGS OF THE FOLLOWING

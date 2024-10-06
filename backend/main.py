@@ -20,23 +20,7 @@ app.add_middleware(
 
 create_db_and_tables()
 
-
-@app.get("/")
-async def root():
-    return {"message": "Hello World"}
-
-@app.get("/blogs/", response_model=list[Blogs])
-def read_blog_posts(db: Session = Depends(get_db)):
-    return get_blog_posts(db)
-    
-
-@app.get('/followers/{user_id}')
-async def get_followers(user_id: int, db: Session = Depends(get_db)):
-    users = get_all_followers(db, user_id)
-    print(users)
-    return users
-
-app.include_router(api_router)
+app.include_router(api_router, prefix='/api')
 
 if __name__ == "__main__":
     import uvicorn

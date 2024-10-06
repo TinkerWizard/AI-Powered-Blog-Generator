@@ -6,7 +6,7 @@ class Blogs(SQLModel, table=True):
     id: int = Field(default=None, primary_key=True, sa_column=Column(Integer, autoincrement=True, primary_key=True))
     author_name: str
     author_username: str = Field(foreign_key="users.username")
-    author_username: str
+    author_id: int = Field(foreign_key="users.id")
     title: str
     body: str
     created_date: date

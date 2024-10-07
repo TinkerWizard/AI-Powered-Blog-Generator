@@ -5,4 +5,5 @@ backend/api/__pycache__
 backend/api/routes/__pycache__
 backend/api/schemas/__pycache__
 backend/api/security/__pycache__
+backend/api/utilities/__pycache__
 frontend/node_modules

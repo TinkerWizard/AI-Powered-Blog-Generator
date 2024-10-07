@@ -2,7 +2,6 @@ import Button from '@mui/material/Button';
 import { TopBar } from '../../Utils/TopBar';
 import { Interests } from './components/Interests';
 import { BlogDisplay } from './components/BlogDisplay';
-import { UserDisplay } from './components/UserDisplay';
 import { Recommended } from './components/Recommended';
 
 export const HomePage:React.FC<{}> = () => {

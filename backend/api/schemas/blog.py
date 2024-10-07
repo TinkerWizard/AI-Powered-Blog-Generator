@@ -21,3 +21,14 @@ class GenerateBlog(BaseModel):
     concept: str
     number_of_words: int
     type_of_response: str
+    
+    class Config:
+        allow_population_by_field_name = True
+        # Define aliases for fields
+        schema_extra = {
+            "example": {
+            "concept": "Tech in 2024",
+            "numberOfWords": 500,
+            "typeOfResponse": "Passage"
+            }
+        }

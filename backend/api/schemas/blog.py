@@ -17,3 +17,7 @@ class UpdateBlog(BaseModel):
     body: str
     blog_cover: Optional[UploadFile]
 
+class GenerateBlog(BaseModel):
+    concept: str
+    number_of_words: int
+    type_of_response: str

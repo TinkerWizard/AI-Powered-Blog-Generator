@@ -1,7 +1,12 @@
 import CreateOutlinedIcon from '@mui/icons-material/CreateOutlined';
 import AccountCircleOutlinedIcon from '@mui/icons-material/AccountCircleOutlined';
 import SearchOutlinedIcon from '@mui/icons-material/SearchOutlined';
+import { useNavigate } from 'react-router-dom';
 export const TopBar: React.FC<{}> = () => {
+    const navigate = useNavigate();
+    const handleCreateBlogClick = () => {
+        navigate('/blogs/generate');
+    }
     return (
         <div className="border-bottom p-4">
             {/* Desktop */}
@@ -14,8 +19,12 @@ export const TopBar: React.FC<{}> = () => {
                         </form>
                     </div>
                     <div className="d-flex gap-3">
-                        <CreateOutlinedIcon sx={{ fontSize: 40 }} />
-                        <AccountCircleOutlinedIcon sx={{ fontSize: 40 }} />
+                        <button onClick={handleCreateBlogClick}>
+                            <CreateOutlinedIcon sx={{ fontSize: 40 }} />
+                        </button>
+                        <button>
+                            <AccountCircleOutlinedIcon sx={{ fontSize: 40 }} />
+                        </button>
                     </div>
 
                 </div>

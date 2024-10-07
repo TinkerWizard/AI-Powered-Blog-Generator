@@ -2,9 +2,10 @@ from fastapi import APIRouter, Depends, HTTPException
 from models import Blogs, Followers, Users
 from sqlmodel import Session
 from database import get_db
-from api.schemas.blog import NewBlog, UpdateBlog
+from api.schemas.blog import NewBlog, UpdateBlog, GenerateBlog
 from datetime import datetime, timezone
 import base64
+from api.utilities.generate_blog import generate_blog_using_genai
 from api.security.auth import get_current_user
 router = APIRouter()
 
@@ -110,3 +111,18 @@ def delete_blog_by_id(id: int, db: Session = Depends(get_db)):
         "message":"Blog deleted",
         "deleted_blog": blog
     }
+    
+@router.post('/generate')
+def generate_blog(generate_blog: GenerateBlog):
+    topic = generate_blog.concept
+    number_of_words = generate_blog.number_of_words
+    # Passages, bullet points, numbered points
+    type_of_response = generate_blog.type_of_response
+    template = f"""Use the following pieces of context to build content at the end. 
+    If you cannot produce a content, just say that you can't produce a content. 
+    Keep the content within the number of characters provided. Always say something relative and positive at the end of the content. 
+    Topic: {topic}
+    Number of words: {number_of_words}
+    Type: {type_of_response}
+    Blog:"""
+    return generate_blog_using_genai(template)    

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import './App.css';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { HomePage } from './Layouts/Home/HomePage';
+import { GenerateBlogPage } from './Layouts/Generate Blog/GenerateBlogPage';
 function App() {
   const [content, setContent] = useState<string>();
   const [topic, setTopic] = useState<string>();
@@ -43,6 +44,7 @@ function App() {
 
         {/* Home */}
         <Route path="/home" element={<HomePage />} />
+        <Route path="/blogs/generate" element={<GenerateBlogPage />}/>
       </Routes>
     </Router>
   );

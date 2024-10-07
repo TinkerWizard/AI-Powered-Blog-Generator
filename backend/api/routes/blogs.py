@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException
+from fastapi.responses import JSONResponse
 from models import Blogs, Followers, Users
 from sqlmodel import Session
 from database import get_db
@@ -125,4 +126,8 @@ def generate_blog(generate_blog: GenerateBlog):
     Number of words: {number_of_words}
     Type: {type_of_response}
     Blog:"""
-    return generate_blog_using_genai(template)    
+    content = generate_blog_using_genai(template) 
+    return JSONResponse(
+        status_code=200,
+        content={"message": "Content Generated", "content": content}
+    )

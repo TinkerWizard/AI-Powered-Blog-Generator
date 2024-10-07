@@ -3,7 +3,7 @@ from sqlalchemy import Column, Integer
 from datetime import date
 
 class Blogs(SQLModel, table=True):
-    id: int = Field(default=None, primary_key=True, sa_column=Column(Integer, autoincrement=True, primary_key=True))
+    id: int = Field(default=None, sa_column=Column(Integer, autoincrement=True, primary_key=True))
     author_name: str
     author_username: str = Field(foreign_key="users.username")
     author_id: int = Field(foreign_key="users.id")
@@ -13,7 +13,7 @@ class Blogs(SQLModel, table=True):
     blog_cover: bytes
 
 class Users(SQLModel, table=True):
-    id: int = Field(primary_key=True, default=None, sa_column=Column(Integer, primary_key=True, autoincrement=True))
+    id: int = Field(default=None, sa_column=Column(Integer, primary_key=True, autoincrement=True))
     name: str
     username: str = Field(unique=True, index=True)
     email: str = Field(unique=True, index=True)
@@ -23,7 +23,7 @@ class Users(SQLModel, table=True):
     profile_pic: bytes
     
 class Followers(SQLModel, table=True):
-    id: int = Field(primary_key=True, default=None,sa_column=Column(Integer, primary_key=True, autoincrement=True))
+    id: int = Field(default=None,sa_column=Column(Integer, primary_key=True, autoincrement=True))
     followee_id: int = Field(foreign_key="users.id")
     follower_id: int = Field(foreign_key="users.id")
     followed_at: date

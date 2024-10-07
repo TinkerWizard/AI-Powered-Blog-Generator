@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react';
 import Blog from './../../../Models/Blog';
 export const BlogDisplay: React.FC<{}> = () => {
-
+    const username = 'rick.grimes';
     const [blogs, setBlogs] = useState<Blog[]>();
     useEffect(() => {
         async function fetchBlogs() {
             try {
-                const response = await fetch(`http://127.0.0.1:8000/blogs/`);
+                const response = await fetch(`http://127.0.0.1:8000/api/blogs/following/${username}`);
                 if (!response.ok) {
                     throw new Error('Network response was not ok');
                 }

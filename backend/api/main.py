@@ -1,7 +1,5 @@
 from fastapi import APIRouter
-
 from api.routes import users, authentication, blogs, followers
-
 api_router = APIRouter()
 
 api_router.include_router(users.router, prefix="/users", tags=["Users"])

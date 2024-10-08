@@ -2,10 +2,8 @@ from fastapi import FastAPI, Depends
 from sqlmodel import Session
 from database import create_db_and_tables, engine, get_db
 from models import Blogs
-from crud import get_blog_posts, get_all_followers
 from fastapi.middleware.cors import CORSMiddleware
 from api.main import api_router
-
 from dotenv import load_dotenv
 app = FastAPI()
 

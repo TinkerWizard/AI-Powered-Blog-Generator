@@ -4,10 +4,15 @@ import MenuItem from '@mui/material/MenuItem';
 
 export const GenerateBlogPage: React.FC<{}> = () => {
 
+    // Dummy datas
+    const username = "rick.grimes";
+
     const [concept, setConcept] = useState<string>('');
     const [numberOfWords, setNumberOfWords] = useState<number | undefined>();
     const [typeOfResponse, setTypeOfResponse] = useState<string>('');
-    const [content, setContent] = useState<string>('');
+    // const [content, setContent] = useState<string>('');
+    const [title, setTitle] = useState<string>('');
+    const [body, setBody] = useState<string>('');
     const typeOfResponses = ['Passage', 'Bullet Points', 'Numbered Points'];
     const handleGenerateClick = async (event: any) => {
         event.preventDefault();
@@ -33,10 +38,36 @@ export const GenerateBlogPage: React.FC<{}> = () => {
         const data = await response.json();
         if(response.ok)
         {
-            setContent(data.content);
+            // setContent(data.content);
+            setTitle(data.title);
+            setBody(data.body);
         }
     }
-
+    const handleUploadBlogClick = async () => {
+        const response = await fetch('http://127.0.0.1:8000/api/blogs/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                author_name: "Rick Grimes",// TODO - remove hard coded and fetch from the db using the utilities
+                author_username: username,
+                title: title,
+                body: body,
+                created_date: null,
+                blog_cover: null,
+                author_id: 1 // TODO - remove hard coded and fetch from the db using the utilities
+            }),
+        });
+        const data = await response.json();
+        if(response.ok)
+        {
+            alert(data.message);
+        }
+        else {
+            console.error('Error:', data); // Log any errors for debugging
+        }
+    }
     return (
         <div className="p-5" style={{ width: '100%' }}>
             {/* Desktop */}
@@ -70,6 +101,7 @@ export const GenerateBlogPage: React.FC<{}> = () => {
                             label="Select"
                             defaultValue="Passage"
                             helperText="Please select your desired response type"
+                            onChange={e => setTypeOfResponse(e.target.value)}
                         >
                             {typeOfResponses.map((response) => (
                                 <MenuItem key={response} value={response}>
@@ -77,12 +109,20 @@ export const GenerateBlogPage: React.FC<{}> = () => {
                                 </MenuItem>
                             ))}
                         </TextField>
+                        <input type="file" />
                     </Stack>
                     <button className="btn btn-primary" onClick={handleGenerateClick}>Generate</button>
                 </form>
 
                 <div>
-                    {content}
+                    {title
+                        &&
+                    <div>
+                        <h1>{title}</h1>
+                        <p>{body}</p>
+                        <button className="btn btn-primary" onClick={handleUploadBlogClick}>Upload blog</button>
+                    </div>
+                    }
                 </div>
             </div>
 

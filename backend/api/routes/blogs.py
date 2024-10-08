@@ -73,18 +73,21 @@ def post_blog(blog: NewBlog ,db: Session = Depends(get_db)):
     new_blog_record = Blogs(
         author_name = blog.author_name,
         author_username= blog.author_username,
-        author_id=blog.author_id,
         title=blog.title,
         body=blog.body,
         created_date=datetime.now(timezone.utc),
-        blog_cover=blog_cover_base64
+        blog_cover=blog_cover_base64,
+        author_id=blog.author_id
     )
     
     db.add(new_blog_record)
     db.commit()
     db.refresh(new_blog_record)
     
-    return{"message": "Blog added successfully"}
+    return JSONResponse(
+        status_code=200,
+        content={"message": "Blog added successfully"}
+    )
 
 @router.put('/{id}')
 def update_blog_by_id(id: int, update_blog: UpdateBlog, db: Session = Depends(get_db)):
@@ -122,12 +125,15 @@ def generate_blog(generate_blog: GenerateBlog):
     template = f"""Use the following pieces of context to build content at the end. 
     If you cannot produce a content, just say that you can't produce a content. 
     Keep the content within the number of characters provided. Always say something relative and positive at the end of the content. 
+    Always provide a title and then provide the body in the format below:
+    "Title: Some Title\nBody: This is the body of the content..."
     Topic: {topic}
     Number of words: {number_of_words}
     Type: {type_of_response}
-    Blog:"""
+    Content: Blog
+    """
     content = generate_blog_using_genai(template) 
     return JSONResponse(
         status_code=200,
-        content={"message": "Content Generated", "content": content}
+        content={"message": "Content Generated", "title": content['title'], "body": content['body']}
     )

@@ -7,10 +7,8 @@ class UserRegister(BaseModel):
     name: str
     username: str
     email: str
-    hashed_password: str
-    created_at: Optional[datetime]
-    updated_at: Optional[datetime]
-    profile_pic: Optional[bytes]
+    password: str
+    # profile_pic: Optional[UploadFile] = None
     
 class UserLogin(BaseModel):
     username: str

@@ -4,13 +4,13 @@ from datetime import datetime
 from fastapi import UploadFile, File, Form
 
 class NewBlog(BaseModel):
-    author_name: str
+    author_name: Optional[str]=None
     author_username: str
     title: str
     body: str
     created_date: Optional[datetime]
     blog_cover: Optional[UploadFile]
-    author_id: int
+    author_id: Optional[str]=None
     
 class UpdateBlog(BaseModel):
     title: str

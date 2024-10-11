@@ -1,5 +1,6 @@
 from fastapi import APIRouter, HTTPException, Depends
-from sqlmodel import Session
+from fastapi.responses import JSONResponse
+from sqlalchemy.orm import Session
 from database import get_db
 from api.schemas.user import UserRegister, UserLogin, ResetPassword
 from models import Users
@@ -15,18 +16,21 @@ def user_signup(new_user: UserRegister, db: Session = Depends(get_db)):
     """
     existing_user_with_username = db.query(Users).filter(Users.username == new_user.username).first()
     if existing_user_with_username:
-        raise HTTPException(status_code=400, detail="Username is already taken")
+        return JSONResponse(
+        status_code=400,
+        content={"usernameError": "Username is already taken"}
+    )
     
     # Check if the email is available
     existing_user_with_email = db.query(Users).filter(Users.email == new_user.email).first()
     if existing_user_with_email:
-        raise HTTPException(status_code=400, detail="Email is already taken")
+        return JSONResponse(
+        status_code=400,
+        content={"emailError": "Email is already taken"}
+    )
     profile_pic_base64 = None
-    if new_user.profile_pic:
-        # Assume new_user.profile_pic is a file-like object (e.g., from a form)
-        profile_pic_base64 = base64.b64encode(new_user.profile_pic.read()).decode('utf-8')
         
-    hashed_password = hash_password(new_user.hashed_password)
+    hashed_password = hash_password(new_user.password)
     new_user_record = Users(
         name=new_user.name,
         username=new_user.username,
@@ -46,7 +50,7 @@ def user_signup(new_user: UserRegister, db: Session = Depends(get_db)):
 @router.post('/login')
 def login_user(user_login: UserLogin, db: Session = Depends(get_db)):
     user = db.query(Users).filter(Users.username == user_login.username).first()
-    
+    print("Username:",user_login.username)
     if not user:
         raise HTTPException(status_code=400, detail="Invalid username or password")
     
@@ -71,7 +75,6 @@ def update_password_by_username(username:str, new_password: ResetPassword, db: S
         "message": "Password reset successful"
     }
     
-# will be implemented during JWT implementation
 # @router.get('/logout')
 # def logout(db: Session = Depends(get_db)):
     

@@ -1,19 +1,22 @@
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.responses import JSONResponse
 from models import Blogs, Followers, Users
-from sqlmodel import Session
+# from sqlmodel import Session
+from sqlalchemy.orm import Session
 from database import get_db
 from api.schemas.blog import NewBlog, UpdateBlog, GenerateBlog
 from datetime import datetime, timezone
 import base64
 from api.utilities.generate_blog import generate_blog_using_genai
 from api.security.auth import get_current_user
+from api.utilities.users import get_author_id_using_author_username, get_author_name_using_author_username
+
 router = APIRouter()
 
 
 @router.get('/')
 def get_all_blogs(db: Session = Depends(get_db)):
-    """
+    """.gr
     RETRIEVE ALL BLOGS
     """
     return db.query(Blogs).all()
@@ -32,7 +35,7 @@ def get_blog_by_id(id: int, db: Session = Depends(get_db)):
     }
 
 @router.get("/author/{username}")
-def get_blogs_by_author_username(username: str, db: Session = Depends(get_db)):
+def get_blogs_by_author_username(username: str, current_user: Users = Depends(get_current_user), db: Session = Depends(get_db)):
     """
     RETRIEVE BLOGS BY AUTHOR USERNAME
     """
@@ -42,13 +45,12 @@ def get_blogs_by_author_username(username: str, db: Session = Depends(get_db)):
     return blogs
 
 @router.get("/following/{username}")    
-def get_blogs_by_user_username(username: str, db: Session = Depends(get_db)):
+def get_blogs_by_user_username(username: str, current_user: Users = Depends(get_current_user), db: Session = Depends(get_db)):
     """
     RETRIEVE BLOGS BY USER USERNAME, DISPLAY ONLY BLOGS OF THE FOLLOWING
     """
     user = db.query(Users).filter(Users.username == username).first()
     user_id = user.id
-    print("USER ID:", user_id)
     # get the following list of the user_id
     following = db.query(Followers).filter(Followers.follower_id == user_id)
     # grab the followee_id of the following
@@ -66,18 +68,18 @@ def get_blogs_by_user_username(username: str, db: Session = Depends(get_db)):
     return blogs
     
 @router.post('/')
-def post_blog(blog: NewBlog ,db: Session = Depends(get_db)):
+async def post_blog(blog: NewBlog ,db: Session = Depends(get_db)):
     blog_cover_base64 = None
     if blog.blog_cover:
         blog_cover_base64 = base64.b64encode(blog.blog_cover.read()).decode('utf-8')
     new_blog_record = Blogs(
-        author_name = blog.author_name,
+        author_name = get_author_name_using_author_username(blog.author_username, db),
         author_username= blog.author_username,
         title=blog.title,
         body=blog.body,
         created_date=datetime.now(timezone.utc),
         blog_cover=blog_cover_base64,
-        author_id=blog.author_id
+        author_id=get_author_id_using_author_username(blog.author_username, db)
     )
     
     db.add(new_blog_record)

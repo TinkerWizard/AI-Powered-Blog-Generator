@@ -5,7 +5,7 @@ import MenuItem from '@mui/material/MenuItem';
 export const GenerateBlogPage: React.FC<{}> = () => {
 
     // Dummy datas
-    const username = "rick.grimes";
+    const username = localStorage.getItem('username');
 
     const [concept, setConcept] = useState<string>('');
     const [numberOfWords, setNumberOfWords] = useState<number | undefined>();
@@ -50,13 +50,13 @@ export const GenerateBlogPage: React.FC<{}> = () => {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                author_name: "Rick Grimes",// TODO - remove hard coded and fetch from the db using the utilities
+                author_name: null,
                 author_username: username,
                 title: title,
                 body: body,
                 created_date: null,
                 blog_cover: null,
-                author_id: 1 // TODO - remove hard coded and fetch from the db using the utilities
+                author_id: null
             }),
         });
         const data = await response.json();

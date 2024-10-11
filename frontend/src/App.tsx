@@ -3,6 +3,8 @@ import './App.css';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { HomePage } from './Layouts/Home/HomePage';
 import { GenerateBlogPage } from './Layouts/Generate Blog/GenerateBlogPage';
+import { SignUpPage } from './Layouts/Authentication/SignUpPage';
+import { SignInPage } from './Layouts/Authentication/SignInPage';
 function App() {
   const [content, setContent] = useState<string>();
   const [topic, setTopic] = useState<string>();
@@ -39,11 +41,11 @@ function App() {
     <Router>
       <Routes>
         {/* Authentication */}
-        {/* <Route path="/signup" element={<SignUpForm />} />
-        <Route path="/signin" element={<SignInForm />} /> */}
+        <Route path="/signup" element={<SignUpPage />} />
+        <Route path="/signin" element={<SignInPage />} />
 
         {/* Home */}
-        <Route path="/home" element={<HomePage />} />
+        <Route path="/home/:username" element={<HomePage />} />
         <Route path="/blogs/generate" element={<GenerateBlogPage />}/>
       </Routes>
     </Router>

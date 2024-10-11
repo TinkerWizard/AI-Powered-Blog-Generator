@@ -7,6 +7,10 @@ export const TopBar: React.FC<{}> = () => {
     const handleCreateBlogClick = () => {
         navigate('/blogs/generate');
     }
+    const handleLogoutClick = () => {
+        localStorage.removeItem('token');
+        navigate('/signin');
+    }
     return (
         <div className="border-bottom p-4">
             {/* Desktop */}
@@ -22,7 +26,7 @@ export const TopBar: React.FC<{}> = () => {
                         <button onClick={handleCreateBlogClick}>
                             <CreateOutlinedIcon sx={{ fontSize: 40 }} />
                         </button>
-                        <button>
+                        <button onClick={handleLogoutClick}>
                             <AccountCircleOutlinedIcon sx={{ fontSize: 40 }} />
                         </button>
                     </div>

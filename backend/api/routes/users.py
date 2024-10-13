@@ -1,5 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
+from api.utilities.blogs import get_number_of_blogs_posted_by_user
+from api.utilities.followers import get_number_of_followers, is_following
 from models import Users
 from database import get_db
 from api.schemas.user import UserUpdate
@@ -16,18 +18,25 @@ def get_users(db: Session = Depends(get_db)):
     return db.query(Users).all()
 
 @router.get("/{username}")
-def get_user_by_username(username: str, db: Session = Depends(get_db)):
+def get_user_by_username(username: str, current_user: Users = Depends(get_current_user), db: Session = Depends(get_db)):
     """
     RETRIEVE USER BY USERNAME, ONLY ALLOW IF CURRENT USER IS AUTHENTICATED
     """
     user = db.query(Users).filter(Users.username == username).first()
     if user is None:
         raise HTTPException(status_code=404, detail=user_not_found_detail)
-    return user
+    # get the no.of blogs posted and no. of followers
+    blog_count = get_number_of_blogs_posted_by_user(username, db)
+    number_of_followers = get_number_of_followers(username, db)
+    is_following_result = is_following(username, current_user.username, db)
+    print("Current User:", current_user.username)
+    print("Username:", username)
+    print("Following?",is_following_result)
+    return {"name": user.name, "username": user.username, "profile": user.profile_pic, "created": user.created_at, "blog_count": blog_count, "follower_count": number_of_followers, "is_following": is_following_result}
 
 @router.put("/{username}")
 def update_user_by_username(
-    username: str, user_update: UserUpdate, db: Session = Depends(get_db)
+    username: str, user_update: UserUpdate, current_user: Users = Depends(get_current_user), db: Session = Depends(get_db)
 ):
     """
     UPDATE USER BY USERNAME, ONLY ALLOW IF CURRENT USER IS AUTHENTICATED

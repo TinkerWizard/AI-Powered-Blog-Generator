@@ -1,7 +1,10 @@
 from fastapi import APIRouter, Depends, HTTPException
+from api.security.auth import get_current_user
+from api.utilities.users import get_author_id_using_author_username
 from database import get_db
 from models import Followers, Users
-from sqlmodel import Session, and_
+from sqlmodel import and_
+from sqlalchemy.orm import Session
 from api.schemas.followers import FollowUser, UnfollowUser
 from datetime import datetime, timezone
 
@@ -24,9 +27,11 @@ def get_all_followers_of_the_user_id(user_id: int, db: Session = Depends(get_db)
 @router.post('/')
 def follwer_user(follow_user: FollowUser, db: Session = Depends(get_db)):
     
+    followee_id = get_author_id_using_author_username(follow_user.followee_username)
+    follower_id = get_author_id_using_author_username(follow_user.follower_username)
     new_follower_record = Followers(
-        followee_id=follow_user.followee_id,
-        follower_id=follow_user.follower_id,
+        followee_id=followee_id,
+        follower_id=follower_id,
         followed_at=datetime.now(timezone.utc)
     )
     
@@ -41,10 +46,13 @@ def follwer_user(follow_user: FollowUser, db: Session = Depends(get_db)):
     
 @router.delete('/')
 def unfollow_user(unfollow_user: UnfollowUser, db: Session = Depends(get_db)):
+    
+    followee_id = get_author_id_using_author_username(unfollow_user.followee_username, db)
+    follower_id = get_author_id_using_author_username(unfollow_user.follower_username, db)
     follower_record = db.query(Followers).filter(
         and_(
-            Followers.followee_id == unfollow_user.followee_id,
-            Followers.follower_id == unfollow_user.follower_id
+            Followers.followee_id == followee_id,
+            Followers.follower_id == follower_id
         )
     ).first()
     if not follower_record:

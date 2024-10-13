@@ -1,11 +1,13 @@
-import { FormControl, FormHelperText, Input, InputLabel, Stack, TextField } from "@mui/material";
+import { Stack, TextField } from "@mui/material";
 import { useState } from "react";
 import MenuItem from '@mui/material/MenuItem';
-
+import { TopBar } from "../../Utils/TopBar";
+import { useSelector } from "react-redux";
+import { RootState } from "../../store/store";
 export const GenerateBlogPage: React.FC<{}> = () => {
 
-    // Dummy datas
-    const username = localStorage.getItem('username');
+    const username = useSelector((state: RootState) => state.auth.username);
+    const token = useSelector((state: RootState) => state.auth.token);
 
     const [concept, setConcept] = useState<string>('');
     const [numberOfWords, setNumberOfWords] = useState<number | undefined>();
@@ -27,7 +29,8 @@ export const GenerateBlogPage: React.FC<{}> = () => {
         const response = await fetch('http://127.0.0.1:8000/api/blogs/generate', {
             method: 'POST',
             headers: {
-                'Content-type': 'application/json'
+                'Content-type': 'application/json',
+                'Authorization': `Bearer ${token}`
             },
             body: JSON.stringify({
                 concept,
@@ -47,7 +50,8 @@ export const GenerateBlogPage: React.FC<{}> = () => {
         const response = await fetch('http://127.0.0.1:8000/api/blogs/', {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
             },
             body: JSON.stringify({
                 author_name: null,
@@ -69,9 +73,10 @@ export const GenerateBlogPage: React.FC<{}> = () => {
         }
     }
     return (
-        <div className="p-5" style={{ width: '100%' }}>
+        <div className="" style={{ width: '100%' }}>
             {/* Desktop */}
-            <div className="d-none d-xl-block d-xxl-block" style={{ width: '100%' }}>
+            <TopBar />
+            <div className="d-none d-xl-block d-xxl-block p-5" style={{ width: '100%' }}>
                 {/* Generate Blog */}
                 <form action="">
                     <Stack spacing={2} direction="column" sx={{ marginBottom: 4 }}>

@@ -1,7 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.responses import JSONResponse
 from models import Blogs, Followers, Users
-# from sqlmodel import Session
 from sqlalchemy.orm import Session
 from database import get_db
 from api.schemas.blog import NewBlog, UpdateBlog, GenerateBlog
@@ -39,10 +38,14 @@ def get_blogs_by_author_username(username: str, current_user: Users = Depends(ge
     """
     RETRIEVE BLOGS BY AUTHOR USERNAME
     """
-    blogs = db.query(Blogs).filter(Blogs.author_username == username).all()
-    if not blogs:
-        raise HTTPException(status_code=404, detail="Author have not pulished any blogs or invalid username")
-    return blogs
+    try:
+        blogs = db.query(Blogs).filter(Blogs.author_username == username).all()
+        if not blogs:
+            raise HTTPException(status_code=404, detail="Author have not pulished any blogs or invalid username")
+        return blogs
+    except Exception as e:
+        print(f"Error: {e}")
+        raise HTTPException(status_code=500, detail="An internal server error occurred")
 
 @router.get("/following/{username}")    
 def get_blogs_by_user_username(username: str, current_user: Users = Depends(get_current_user), db: Session = Depends(get_db)):
@@ -68,7 +71,7 @@ def get_blogs_by_user_username(username: str, current_user: Users = Depends(get_
     return blogs
     
 @router.post('/')
-async def post_blog(blog: NewBlog ,db: Session = Depends(get_db)):
+async def post_blog(blog: NewBlog, current_user: Users = Depends(get_current_user), db: Session = Depends(get_db)):
     blog_cover_base64 = None
     if blog.blog_cover:
         blog_cover_base64 = base64.b64encode(blog.blog_cover.read()).decode('utf-8')
@@ -92,7 +95,7 @@ async def post_blog(blog: NewBlog ,db: Session = Depends(get_db)):
     )
 
 @router.put('/{id}')
-def update_blog_by_id(id: int, update_blog: UpdateBlog, db: Session = Depends(get_db)):
+def update_blog_by_id(id: int, update_blog: UpdateBlog, current_user: Users = Depends(get_current_user), db: Session = Depends(get_db)):
     db_blog = db.query(Blogs).filter(Blogs.id == id).first()
     if not db_blog:
         raise HTTPException(status_code=404, detail="Blog not found")
@@ -107,7 +110,7 @@ def update_blog_by_id(id: int, update_blog: UpdateBlog, db: Session = Depends(ge
     return db_blog
 
 @router.delete('/{id}')
-def delete_blog_by_id(id: int, db: Session = Depends(get_db)):
+def delete_blog_by_id(id: int, current_user: Users = Depends(get_current_user), db: Session = Depends(get_db)):
     blog = db.query(Blogs).filter(Blogs.id == id).first()
     if not blog:
         raise HTTPException(status_code=404, detail="Blog not found")
@@ -119,7 +122,7 @@ def delete_blog_by_id(id: int, db: Session = Depends(get_db)):
     }
     
 @router.post('/generate')
-def generate_blog(generate_blog: GenerateBlog):
+def generate_blog(generate_blog: GenerateBlog, current_user: Users = Depends(get_current_user)):
     topic = generate_blog.concept
     number_of_words = generate_blog.number_of_words
     # Passages, bullet points, numbered points

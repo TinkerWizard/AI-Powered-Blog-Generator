@@ -1,6 +1,8 @@
 import { FormControl, InputLabel, Input, FormHelperText, Button } from "@mui/material";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { login, storeJwtToken } from './../../store/authSlice';
 
 export const SignInPage: React.FC<{}> = () => {
 
@@ -14,6 +16,13 @@ export const SignInPage: React.FC<{}> = () => {
     const handlePasswordChange = (event: any) => {
         setPassword(event.target.value);
     }
+    const dispatch = useDispatch();
+    const storeUsername = async (username: string) => {
+        dispatch(login(username));
+    }
+    const storeToken = async (token: string) => {
+        dispatch(storeJwtToken(token));
+    }
     const handleSignInClick = async () => {
         const response = await fetch('http://127.0.0.1:8000/api/auth/login', {
             method: 'POST',
@@ -25,9 +34,9 @@ export const SignInPage: React.FC<{}> = () => {
         const data = await response.json();
         if(response.ok)
         {
+            storeUsername(username);
+            storeToken(data.access_token);
             navigate(`/home/${username}`);
-            localStorage.setItem('token', data.access_token);
-            // localStorage.setItem('username', username);
         }
         else
         {
@@ -66,7 +75,7 @@ export const SignInPage: React.FC<{}> = () => {
                             />
                             <FormHelperText id="my-helper-text">{}</FormHelperText>
                         </FormControl>
-                        <p>{credentialsError}</p>
+                        <p className="text-danger">{credentialsError}</p>
                         <Button
                             variant="contained"
                             onClick={handleSignInClick}
